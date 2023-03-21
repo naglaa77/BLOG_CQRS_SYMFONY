@@ -1,0 +1,19 @@
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Article List{% endblock %}
+
+{% block body %}
+    <h1>Article List</h1>
+    <ul>
+        {% for article in articles %}
+            <li>
+                <h2>{{ article.title }}</h2>
+                <p>{{ article.description }}</p>
+                <small>Created at: {{ article.createdAt.format('Y-m-d H:i:s') }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
