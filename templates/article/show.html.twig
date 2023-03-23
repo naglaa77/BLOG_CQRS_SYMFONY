@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>{{ article.title }}</h1>
+                <p>{{ article.description }}</p>
+                <small>Created at: {{ article.createdAt.format('Y-m-d H:i:s') }}</small>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,7 +1,5 @@
 <?php
 
-// src/DataFixtures/ArticleFixtures.php
-
 namespace App\DataFixtures;
 
 use App\Entity\Article;
