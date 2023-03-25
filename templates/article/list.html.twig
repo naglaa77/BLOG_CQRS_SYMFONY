@@ -4,10 +4,11 @@
 
 {% block body %}
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
+        <div class="row col-md-12">
+            <div class="">
                 <h1>Article List</h1>
-                <ul class="list-group">
+                <a href="{{ path('article_create') }}" class="btn btn-primary mb-3">Create Article</a>
+                <ul class="list-group d-row ">
                     {% for article in articles %}
                         <li class="list-group-item col-4">
                             <h2>{{ article.title }}</h2>

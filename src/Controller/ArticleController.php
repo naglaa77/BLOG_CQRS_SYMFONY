@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Command\CreateArticleCommand;
+use App\Command\Handler\CreateArticleHandler;
+use Symfony\Component\HttpFoundation\Request;
 use App\Query\GetAllArticles;
 use App\Query\GetArticleById;
 use App\Query\Handler\GetAllArticlesHandler;
@@ -15,10 +18,11 @@ class ArticleController extends AbstractController
     private $getAllArticlesHandler;
     private $getArticleByIdHandler;
 
-    public function __construct(GetAllArticlesHandler $getAllArticlesHandler, GetArticleByIdHandler $getArticleByIdHandler)
+    public function __construct(GetAllArticlesHandler $getAllArticlesHandler, GetArticleByIdHandler $getArticleByIdHandler,CreateArticleHandler $createArticleHandler)
     {
         $this->getAllArticlesHandler = $getAllArticlesHandler;
         $this->getArticleByIdHandler = $getArticleByIdHandler;
+        $this->createArticleHandler = $createArticleHandler;
     }
 
     
@@ -33,7 +37,7 @@ class ArticleController extends AbstractController
     }
 
     
-     #[Route("/article/{id}", name:"article_show")]
+     #[Route("/article/{id<\d+>}", name:"article_show")]
     public function show(int $id): Response
     {
         $query = new GetArticleById($id);
@@ -44,5 +48,23 @@ class ArticleController extends AbstractController
         }
 
         return $this->render('article/show.html.twig', ['article' => $article]);
+    }
+
+     #[Route("/article/create", name:"article_create",methods:["GET", "POST"])]
+    public function create(Request $request): Response
+    {
+       
+        if ($request->IsMethod('POST')) {
+            $title = $request->request->get('title');
+            $description = $request->request->get('description');
+            
+            $command = new CreateArticleCommand($title,$description);
+            $this->createArticleHandler->__invoke($command);
+
+            return $this->redirectToRoute('article_list');
+        
+        }
+
+        return $this->render('article/create.html.twig');
     }
 }
