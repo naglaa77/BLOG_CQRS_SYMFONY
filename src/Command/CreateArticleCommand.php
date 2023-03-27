@@ -5,11 +5,14 @@ class CreateArticleCommand
 {
     private $title;
     private $description;
+    private $categoryId;
 
-    public function __construct($title,$description)
+
+    public function __construct($title,$description,$categoryId)
     {
         $this->title = $title;
         $this->description = $description;
+        $this->categoryId = $categoryId;
     }
     
     public function getTitle():string
@@ -21,6 +24,10 @@ class CreateArticleCommand
     {
         return $this->description;
 
+    }
+    public function getCategoryId(): ?string
+    {
+        return $this->categoryId;
     }
 
 }

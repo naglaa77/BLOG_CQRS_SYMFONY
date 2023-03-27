@@ -3,8 +3,9 @@
 namespace App\Command\Handler;
 
 use App\Entity\Article;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Category;
 use App\Command\CreateArticleCommand;
+use Doctrine\ORM\EntityManagerInterface;
 
 class CreateArticleHandler
 {
@@ -22,12 +23,16 @@ class CreateArticleHandler
         $article->setTitle($command->getTitle());
         $article->setDescription($command->getDescription());
         $article->setCreatedAt(new \DateTime());
+        $categoryId = $command->getCategoryId();
+        if ($categoryId) {
+            $category = $this->entityManager->getReference(Category::class, $categoryId);
+            $article->setCategory($category);
+        }
 
         $this->entityManager->persist($article);
         $this->entityManager->flush();
-
         
-return $article;
+        return $article;
 
     }
 

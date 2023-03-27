@@ -85,22 +85,25 @@ public function list(Request $request, GetArticlesByCategoryHandler $handler, Ge
         return $this->render('article/show.html.twig', ['article' => $article]);
     }
 
-     #[Route("/article/create", name:"article_create",methods:["GET", "POST"])]
-    public function create(Request $request): Response
+    #[Route("/article/create", name:"article_create",methods:["GET", "POST"])]
+    public function create(Request $request, CategoryRepository $categoryRepository): Response
     {
-       
-        if ($request->IsMethod('POST')) {
+        if ($request->isMethod('POST')) {
             $title = $request->request->get('title');
             $description = $request->request->get('description');
-            
-            $command = new CreateArticleCommand($title,$description);
+            $categoryId = $request->request->get('category');
+
+            $command = new CreateArticleCommand($title, $description, $categoryId);
             $this->createArticleHandler->__invoke($command);
 
             return $this->redirectToRoute('article_list');
-        
         }
 
-        return $this->render('article/create.html.twig');
+        $categories = $categoryRepository->findAll();
+
+        return $this->render('article/create.html.twig', [
+            'categories' => $categories
+        ]);
     }
 
     
