@@ -38,24 +38,24 @@ class ArticleController extends AbstractController
 
     
      #[Route("/articles", name:"article_list")]
-     
-    public function list(Request $request,GetArticlesByCategoryHandler $handler,GetAllCategoriesQueryHandler $categoriesQueryHandler): Response
-    {
-       $form = $this->createForm(CategoryFilterType::class);
+public function list(Request $request, GetArticlesByCategoryHandler $handler, GetAllCategoriesQueryHandler $categoriesQueryHandler): Response
+{
+
+    $form = $this->createForm(CategoryFilterType::class);
 
     $form->handleRequest($request);
-
-    $categoryId = null;
+ 
     if ($form->isSubmitted() && $form->isValid()) {
-        $data = $form->getData();
-    dd($data);
-    $categoryId = $data['category'] ? $data['category']->getId() : null;
-    return new RedirectResponse($this->generateUrl('article_list'));
+        $category = $form->get('category')->getData();
+        $categoryId = $category ? $category->getId() : null;
+
+    } else {
+        $categoryId = null;
     }
 
-    if ($categoryId) {
-        $query = new GetArticleByCategoryQuery($categoryId);
-        $articles = $handler->__invoke($query);
+    if ($categoryId !== null) {
+    $query = new GetArticleByCategoryQuery($categoryId);
+    $articles = $handler->__invoke($query);
     } else {
         $query = new GetAllArticles();
         $articles = $this->getAllArticlesHandler->__invoke($query);
@@ -68,11 +68,8 @@ class ArticleController extends AbstractController
         'categories' => $categories,
         'form' => $form->createView(),
     ]);
-        // $query = new GetAllArticles();
-        // $articles = $this->getAllArticlesHandler->__invoke($query);
+}
 
-        // return $this->render('article/list.html.twig', ['articles' => $articles]);
-    }
 
     
      #[Route("/article/{id<\d+>}", name:"article_show")]

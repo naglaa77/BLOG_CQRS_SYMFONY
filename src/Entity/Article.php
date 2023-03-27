@@ -24,8 +24,8 @@ class Article
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Category $category = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private Category $category;
 
     public function getId(): ?int
     {
