@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles by Category{% endblock %}
+
+{% block body %}
+    <h1>Articles by Category</h1>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit">Filter</button>
+    {{ form_end(form) }}
+
+    <ul>
+        {% for article in articles %}
+            <li>
+                <h2>{{ article.title }}</h2>
+                <p>{{ article.description }}</p>
+                <small>Created at: {{ article.createdAt.format('Y-m-d H:i:s') }}</small>
+            </li>
+        {% else %}
+            <li>No articles found in this category.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

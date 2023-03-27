@@ -2,38 +2,76 @@
 
 namespace App\Controller;
 
-use App\Command\CreateArticleCommand;
-use App\Command\Handler\CreateArticleHandler;
-use Symfony\Component\HttpFoundation\Request;
 use App\Query\GetAllArticles;
 use App\Query\GetArticleById;
+use App\Form\CategoryFilterType;
+use App\Query\GetAllCategoriesQuery;
+use App\Command\CreateArticleCommand;
+use App\Repository\CategoryRepository;
+use App\Query\GetArticleByCategoryQuery;
 use App\Query\Handler\GetAllArticlesHandler;
 use App\Query\Handler\GetArticleByIdHandler;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Command\Handler\CreateArticleHandler;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Query\Handler\GetAllCategoriesQueryHandler;
+use App\Query\Handler\GetArticlesByCategoryHandler;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ArticleController extends AbstractController
 {
     private $getAllArticlesHandler;
     private $getArticleByIdHandler;
+    private $createArticleHandler;
+    private $getArticlesByCategoryHandler;
+    
 
-    public function __construct(GetAllArticlesHandler $getAllArticlesHandler, GetArticleByIdHandler $getArticleByIdHandler,CreateArticleHandler $createArticleHandler)
+    public function __construct(GetAllArticlesHandler $getAllArticlesHandler, GetArticleByIdHandler $getArticleByIdHandler,CreateArticleHandler $createArticleHandler,GetArticlesByCategoryHandler $getArticlesByCategoryHandler)
     {
         $this->getAllArticlesHandler = $getAllArticlesHandler;
         $this->getArticleByIdHandler = $getArticleByIdHandler;
         $this->createArticleHandler = $createArticleHandler;
+        $this->getArticlesByCategoryHandler = $getArticlesByCategoryHandler;
     }
 
     
      #[Route("/articles", name:"article_list")]
      
-    public function list(): Response
+    public function list(Request $request,GetArticlesByCategoryHandler $handler,GetAllCategoriesQueryHandler $categoriesQueryHandler): Response
     {
+       $form = $this->createForm(CategoryFilterType::class);
+
+    $form->handleRequest($request);
+
+    $categoryId = null;
+    if ($form->isSubmitted() && $form->isValid()) {
+        $data = $form->getData();
+    dd($data);
+    $categoryId = $data['category'] ? $data['category']->getId() : null;
+    return new RedirectResponse($this->generateUrl('article_list'));
+    }
+
+    if ($categoryId) {
+        $query = new GetArticleByCategoryQuery($categoryId);
+        $articles = $handler->__invoke($query);
+    } else {
         $query = new GetAllArticles();
         $articles = $this->getAllArticlesHandler->__invoke($query);
+    }
 
-        return $this->render('article/list.html.twig', ['articles' => $articles]);
+    $categories = $categoriesQueryHandler->__invoke(new GetAllCategoriesQuery());
+
+    return $this->render('article/list.html.twig', [
+        'articles' => $articles,
+        'categories' => $categories,
+        'form' => $form->createView(),
+    ]);
+        // $query = new GetAllArticles();
+        // $articles = $this->getAllArticlesHandler->__invoke($query);
+
+        // return $this->render('article/list.html.twig', ['articles' => $articles]);
     }
 
     
@@ -67,4 +105,6 @@ class ArticleController extends AbstractController
 
         return $this->render('article/create.html.twig');
     }
+
+    
 }

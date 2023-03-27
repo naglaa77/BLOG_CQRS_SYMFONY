@@ -26,7 +26,8 @@ class CreateArticleHandler
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
-        return $article;
+        
+return $article;
 
     }
 

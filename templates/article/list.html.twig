@@ -1,24 +1,36 @@
+{# templates/article/list.html.twig #}
+
 {% extends 'base.html.twig' %}
 
-{% block title %}Article List{% endblock %}
+{% block title %}Articles{% endblock %}
 
 {% block body %}
+    <h1>Articles</h1>
+    <form action="{{ path('article_list') }}" method="get">
+        {{ form_widget(form.category, {'attr': {'onchange': 'this.form.submit()'}}) }}
+    </form>
     <div class="container">
-        <div class="row col-md-12">
-            <div class="">
-                <h1>Article List</h1>
-                <a href="{{ path('article_create') }}" class="btn btn-primary mb-3">Create Article</a>
-                <ul class="list-group d-row ">
-                    {% for article in articles %}
-                        <li class="list-group-item col-4">
-                            <h2>{{ article.title }}</h2>
-                            <p>{{ article.description }}</p>
+        <div class="row">
+            {% for article in articles %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h2 class="card-title">{{ article.title }}</h2>
+                            <p class="card-text">{{ article.description }}</p>
                             <small>Created at: {{ article.createdAt.format('Y-m-d H:i:s') }}</small>
-                            <a href="{{ path('article_show', {'id': article.id}) }}" class="btn btn-primary">Show Details</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                            <a href="{{ path('article_show',{'id': article.id }) }}" class="btn btn-primary d-block mt-4 mx-left w-50 " > Read More</a>
+                        </div>
+                    </div>
+                </div>
+                {% if loop.index is divisible by(3) and not loop.last %}
+                    </div>
+                    <div class="row">
+                {% endif %}
+            {% else %}
+                <div class="col-md-12">
+                    <p>No articles found.</p>
+                </div>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}
